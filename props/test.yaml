@@ -1,0 +1,3 @@
+path: /Users/mkpk/Downloads/Ckpts/
+models: ['nlp_structbert_word-segmentation_chinese-base', 'nlp_structbert_word-segmentation_chinese-base-ecommerce', 'nlp_structbert_word-segmentation_chinese-lite', 'nlp_structbert_word-segmentation_chinese-lite-ecommerce', 'nlp_lstmcrf_word-segmentation_chinese-ecommerce', 'nlp_lstmcrf_word-segmentation_chinese-news']
+algos: ['jieba', 'snownlp', 'jiagu', ]
