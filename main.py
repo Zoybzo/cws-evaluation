@@ -92,9 +92,16 @@ def evaluation(config):
         logger.info(f"Current Dataset: {dataset}")
         for target in config["tools"]:
             logger.info(f"Target Tool: {target}")
+            if target in MODEL_TOOL:
+                model_name_or_path = os.path.join(config["path"], target)
+                model = Model.from_pretrained(model_name_or_path)
+                tokenizer = TokenClassificationTransformersPreprocessor(model.model_dir)
+                pipeline_ins = pipeline(
+                    task=Tasks.word_segmentation, model=model, preprocessor=tokenizer
+                )
             for ref, can in tqdm(zip(ref_all, can_all), desc="Processing"):
                 ref_words = ref.strip().split()
-                can_words = get_result(config, target, can)
+                can_words = get_result(config, target, can, pipeline_ins)
                 ref_words_len, can_words_len, acc_word_len = report.compare_line(
                     ref_words, can_words
                 )
@@ -110,7 +117,7 @@ def evaluation(config):
     return report.get_results()
 
 
-def get_result(config, target, line):
+def get_result(config, target, line, pipeline_ins=None):
     """
     Get the result of the target tool.
 
@@ -118,19 +125,36 @@ def get_result(config, target, line):
         config (dict): The config.
         target (str): The target tool.
         line (str): The input text.
-
+        pipeline_ins (Pipeline): The pipeline.
     Returns:
         result (list): The result of the tool.
     """
     if target in ALGO_TOOL:
         result = run_algo(config, target, line)
     elif target in MODEL_TOOL:
-        model_name_or_path = os.path.join(config["path"], target)
-        result = run_model(line, model_name_or_path)
+        result = run_pipeline(line, pipeline_ins)
+        # result = run_model(line, model_name_or_path)
     else:
         # Add the error to result
         result = f"target: {target} is not supported"
 
+    return result
+
+
+def run_pipeline(test_data, pipeline):
+    """
+    Run the pipeline with the test data.
+
+    Args:
+        test_data (str): The input text.
+        pipeline (Pipeline): The pipeline.
+
+    Returns:
+        result (list): The result of the pipeline.
+    """
+    if isinstance(test_data, str):
+        test_data = [test_data]
+    result = pipeline(input=test_data)[0]["output"]
     return result
 
 
