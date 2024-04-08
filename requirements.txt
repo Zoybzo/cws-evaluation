@@ -1,3 +1,7 @@
 modelscope
 loguru
+tqdm
 jieba
+jiagu
+snownlp
+
