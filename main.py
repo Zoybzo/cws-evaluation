@@ -89,17 +89,33 @@ def evaluation(config):
             can_all = f.readlines()
         with open(os.path.join(dataset_path, dataset + ".txt"), "r") as f:
             ref_all = f.readlines()
+        # filter the ref and can line by line.
+        fin_can, fin_ref = [], []
+        for ref, can in zip(ref_all, can_all):
+            # check whether the length of ref and can is smaller than 512
+            if len(ref) < 512 and len(can) < 512:
+                fin_ref.append(ref)
+                fin_can.append(can)
+            else:
+                logger.warning(
+                    f"The length of ref or can is larger than 512, sentence:  {(can)}"
+                )
+        ref_all, can_all = fin_ref, fin_can
         logger.info(f"Current Dataset: {dataset}")
         for target in config["tools"]:
             logger.info(f"Target Tool: {target}")
             if target in MODEL_TOOL:
                 model_name_or_path = os.path.join(config["path"], target)
                 model = Model.from_pretrained(model_name_or_path)
-                tokenizer = TokenClassificationTransformersPreprocessor(model.model_dir)
+                tokenizer = TokenClassificationTransformersPreprocessor(
+                    model.model_dir, max_length=512
+                )
                 pipeline_ins = pipeline(
                     task=Tasks.word_segmentation, model=model, preprocessor=tokenizer
                 )
             for ref, can in tqdm(zip(ref_all, can_all), desc="Processing"):
+                # logger.debug(f"ref: {ref}")
+                # logger.debug(f"can: {can}")
                 ref_words = ref.strip().split()
                 can_words = get_result(config, target, can, pipeline_ins)
                 ref_words_len, can_words_len, acc_word_len = report.compare_line(
@@ -206,18 +222,18 @@ def run_algo(config, algo="jieba", test_data=None):
 
 
 if __name__ == "__main__":
-    logger.remove()
-    logger.add(
-        sys.stdout,
-        level="INFO",
-    )
-    # load config
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=str, default="今天天气不错，适合出去游玩")
     args = parser.parse_args()
     config = Config(
         config_file_list=["props/test.yaml", "props/run.yaml"],
     )
+    logger.remove()
+    logger.add(
+        sys.stdout,
+        level=config["log_level"],
+    )
+    # load config
     # if config["mode"] == "multi_time":
     #     multi_time(config)
     if config["mode"] == "one_time":
