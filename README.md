@@ -2,10 +2,12 @@
 测试多种中文分词算法的性能
 
 # 使用方法
-在`props/`下更改对应的yaml文件，然后运行
+在`props/`下更改对应的yaml文件, 然后运行
 ```
 python main.py
 ```
+注意, 如果需要使用神经网络模型, 则需要提前下载好models中对应的模型文件, 并将模型文件放在yaml文件中path的路径下.
+模型文件的下载地址为: www.modelscope.cn
 
 # 测试结果
 Models:
