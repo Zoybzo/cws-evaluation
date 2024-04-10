@@ -9,6 +9,10 @@ python main.py
 注意, 如果需要使用神经网络模型, 则需要提前下载好models中对应的模型文件, 并将模型文件放在yaml文件中path的路径下.
 模型文件的下载地址为: www.modelscope.cn
 
+可以使用两种方式运行: one-time 和 evaluation
+- one-time: 仅仅运行一次, 并输出结果
+- evaluation: 测试数据集, 并输出最终结果
+
 # 测试结果
 Models:
 - jieba
