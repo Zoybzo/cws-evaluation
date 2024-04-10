@@ -4,4 +4,6 @@ tqdm
 jieba
 jiagu
 snownlp
-
+torch
+torchvision
+transformers
