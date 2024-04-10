@@ -113,6 +113,8 @@ def evaluation(config):
                 pipeline_ins = pipeline(
                     task=Tasks.word_segmentation, model=model, preprocessor=tokenizer
                 )
+            else:
+                pipeline_ins = None
             for ref, can in tqdm(zip(ref_all, can_all), desc="Processing"):
                 # logger.debug(f"ref: {ref}")
                 # logger.debug(f"can: {can}")
@@ -128,8 +130,9 @@ def evaluation(config):
                     can_words_len=can_words_len,
                     acc_word_len=acc_word_len,
                 )
-            report.output_results()
+        report.output_results()
     report.output_results()
+    report.save_results()
     return report.get_results()
 
 

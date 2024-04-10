@@ -70,6 +70,20 @@ class Report:
                 logger.info(f"precision: {precision}")
                 logger.info(f"f1: {f1}")
 
+    def save_results(self):
+        with open("log/results.txt", "w") as f:
+            for dataset, targets in self.results.items():
+                f.write(f"dataset: {dataset}\n")
+                for target, result in targets.items():
+                    f.write(f"target: {target}\n")
+                    ref_words_len, can_words_len, acc_word_len = result
+                    recall = self.cal_recall(ref_words_len, acc_word_len)
+                    precision = self.cal_precision(can_words_len, acc_word_len)
+                    f1 = self.cal_f1(recall, precision)
+                    f.write(f"recall: {recall}\n")
+                    f.write(f"precision: {precision}\n")
+                    f.write(f"f1: {f1}\n")
+
     def cal_recall(self, ref_words_len, acc_word_len):
         return acc_word_len / ref_words_len
 
